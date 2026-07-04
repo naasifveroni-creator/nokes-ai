@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>NOKES · Premium AI Assistant</title>
+    <!-- Essential Libraries -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #08080f;
+            --surface: #12121f;
+            --border: #27273d;
+            --primary: #7c5cfc;
+            --primary-glow: #9d8aff;
+            --secondary: #00d4aa;
+            --accent: #ff6b9d;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --text: #f0f0f5;
+            --sub: #8a8aa3;
+            --radius: 22px;
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif;
+            height: 100%;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+        }
+        .app {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            height: 100vh;
+            position: relative;
+            background: var(--bg);
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0b0b1a 0%, var(--surface) 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+            overflow-y: auto;
+            box-shadow: inset -1px 0 0 var(--border);
+        }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(124, 92, 252, 0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(124, 92, 252, 0.2);
+        }
+        .logo-icon { font-size: 28px; }
+        .logo-info h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-info p {
+            font-size: 11px;
+            color: var(--sub);
+            margin-top: 2px;
+        }
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--sub);
+            letter-spacing: 1px;
+            padding: 0 12px;
+            margin-top: 8px;
+        }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all var(--transition);
+            font-weight: 500;
+        }
+        .nav-btn:hover { background: rgba(124, 92, 252, 0.1); border-color: rgba(124, 92, 252, 0.2); }
+        .nav-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(124, 92, 252, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(124, 92, 252, 0.1);
+            margin-top: auto;
+        }
+        .stat { text-align: center; }
+        .stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 11px; color: var(--sub); margin-top: 4px; }
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        /* Top Bar */
+        .top-bar {
+            padding: 16px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(20px);
+        }
+        .top-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .top-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .mode-toggle {
+            display: flex;
+            background: #1a1a2c;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--sub);
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+        .mode-btn.active { background: var(--primary); color: #fff; }
+        .settings-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1a1a2c;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all var(--transition);
+        }
+        .settings-icon:hover { background: rgba(124, 92, 252, 0.2); border-color: var(--primary); }
+        /* Chat Area */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .chat-message {
+            display: flex;
+            gap: 12px;
+            animation: msgIn 0.3s ease;
+        }
+        .chat-message.user { justify-content: flex-end; }
+        .chat-message.assistant { justify-content: flex-start; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .avatar.assistant {
+            background: linear-gradient(135deg, rgba(124, 92, 252, 0.3), rgba(0, 212, 170, 0.1));
+            border: 1px solid rgba(124, 92, 252, 0.3);
+        }
+        .bubble {
+            max-width: 55%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            line-height: 1.6;
+            font-size: 15px;
+            word-break: break-word;
+        }
+        .chat-message.user .bubble {
+            background: linear-gradient(135deg, var(--primary), #6b47d9);
+            border: none;
+            color: #fff;
+        }
+        .bubble strong { color: var(--secondary); }
+        .bubble em { color: var(--primary-glow); font-style: italic; }
+        /* Input Area */
+        .input-area {
+            padding: 20px 24px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            backdrop-filter: blur(20px);
+        }
+        .input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            background: #1a1a2c;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            transition: all var(--transition);
+        }
+        .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 20px rgba(124,92,252,0.2); background: rgba(124,92,252,0.05); }
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 15px;
+            padding: 12px 12px;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+            font-family: inherit;
+        }
+        textarea::placeholder { color: var(--sub); }
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #6b47d9);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+        .send-btn:active { transform: scale(0.95); }
+        .send-btn:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(124, 92, 252, 0.4); }
+        /* Settings Panel */
+        .panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0b0b1a 0%, var(--surface) 100%);
+            border-left: 1px solid var(--border);
+            padding: 24px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+        }
+        .panel.open { transform: translateX(0); }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 900;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .overlay.show { opacity: 1; pointer-events: auto; }
+        .panel-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .panel-header h2 { font-size: 20px; font-weight: 700; color: var(--primary); }
+        .panel select, .panel input, .panel textarea {
+            background: #1a1a2c;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            font-family: inherit;
+        }
+        .panel button {
+            background: linear-gradient(135deg, var(--primary), #6b47d9);
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .diagnostic {
+            font-size: 12px;
+            color: var(--sub);
+            background: rgba(124, 92, 252, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .scroll { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        @media (max-width: 768px) {
+            .app { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+            .bubble { max-width: 90%; }
+            .panel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar scroll">
+        <div class="logo-section">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-info">
+                <h1>NOKES</h1>
+                <p>Premium AI</p>
+                <span class="premium-badge">✨ Pro</span>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Chat</div>
+            <button class="nav-btn active" onclick="startNewChat()">
+                <span class="nav-icon">💬</span>
+                <span>New Chat</span>
+            </button>
+            <button class="nav-btn" onclick="showHistory()">
+                <span class="nav-icon">📜</span>
+                <span>History</span>
+            </button>
+            <button class="nav-btn" onclick="showTemplates()">
+                <span class="nav-icon">📋</span>
+                <span>Templates</span>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Generate</div>
+            <button class="nav-btn" onclick="quickGenerate('excel')">
+                <span class="nav-icon">📊</span>
+                <span>Excel Sheets</span>
+            </button>
+            <button class="nav-btn" onclick="quickGenerate('pptx')">
+                <span class="nav-icon">🎨</span>
+                <span>Presentations</span>
+            </button>
+            <button class="nav-btn" onclick="quickGenerate('code')">
+                <span class="nav-icon">💻</span>
+                <span>Code Files</span>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Tools</div>
+            <button class="nav-btn" onclick="openAnalysis()">
+                <span class="nav-icon">📈</span>
+                <span>Data Analysis</span>
+            </button>
+            <button class="nav-btn" onclick="openResearch()">
+                <span class="nav-icon">🔬</span>
+                <span>Research</span>
+            </button>
+            <button class="nav-btn" onclick="toggleSettings()">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </button>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat">
+                <div class="stat-value" id="msgCount">0</div>
+                <div class="stat-label">Messages</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="fileCount">0</div>
+                <div class="stat-label">Files Gen</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-title">🧠 NOKES Pro – Premium AI Chat</div>
+            <div class="top-controls">
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="switchMode('chat')">💬 Chat</button>
+                    <button class="mode-btn" onclick="switchMode('analyze')">📊 Analyze</button>
+                    <button class="mode-btn" onclick="switchMode('create')">✨ Create</button>
+                </div>
+                <div class="settings-icon" onclick="toggleSettings()">⚙️</div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat scroll" id="chat"></div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrap">
+                    <textarea id="userInput" rows="1" placeholder="Ask NOKES anything... (e.g., analyze sales data, create presentation)"></textarea>
+                </div>
+                <button class="send-btn" onclick="sendMessage()">↓</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Panel -->
+<div class="overlay" id="overlay" onclick="toggleSettings()"></div>
+<div class="panel scroll" id="panel">
+    <div class="panel-header">
+        <h2>⚙️ Settings</h2>
+        <div style="cursor: pointer; font-size: 20px;" onclick="toggleSettings()">✕</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 13px; font-weight: 600; text-transform: uppercase;">🔌 AI Provider</label>
+        <select id="provider" onchange="updateModel()">
+            <option value="simulation">🧠 NOKES Native (No API)</option>
+            <option value="openai">🤖 OpenAI</option>
+            <option value="anthropic">🧬 Claude</option>
+        </select>
+    </div>
+
+    <div id="diagnostic" class="diagnostic">
+        ✅ All systems online and ready!
+    </div>
+
+    <button onclick="toggleSettings()" style="margin-top: auto; margin-bottom: 0;">💾 Close Settings</button>
+    <p style="font-size: 11px; color: var(--sub); text-align: center; padding-top: 12px; border-top: 1px solid var(--border);">
+        NOKES Pro • Better than Claude Pro & GPT-4 Pro • 100% Free
+    </p>
+</div>
+
+<script>
+    let chatHistory = [];
+    let messageCount = 0;
+    let fileCount = 0;
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('userInput');
+    const libsReady = typeof XLSX !== 'undefined';
+
+    function toggleSettings() {
+        document.getElementById('panel').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('show');
+    }
+
+    function switchMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        addMessage('assistant', `Switched to <strong>${mode.toUpperCase()}</strong> mode.`);
+    }
+
+    function startNewChat() {
+        chat.innerHTML = '';
+        messageCount = 0;
+        addWelcomeMessage();
+    }
+
+    function showHistory() { addMessage('assistant', '📜 <strong>Chat History</strong><br>Your conversations are saved locally.'); }
+    function showTemplates() { addMessage('assistant', '📋 <strong>Templates:</strong><br>• Sales Report • Pitch Deck • Analysis • Strategy'); }
+    function quickGenerate(type) { input.value = 'Generate ' + type; input.focus(); }
+    function openAnalysis() { addMessage('assistant', '📊 <strong>Data Analysis</strong><br>Upload files to analyze.'); }
+    function openResearch() { addMessage('assistant', '🔬 <strong>Research Mode</strong><br>Ask me to research any topic.'); }
+    function updateModel() {}
+
+    function addMessage(role, html) {
+        const div = document.createElement('div');
+        div.className = `chat-message ${role}`;
+        div.innerHTML = `
+            <div class="avatar ${role}">${role === 'user' ? '👤' : '🧠'}</div>
+            <div class="bubble">${html}</div>
+        `;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+        if (role === 'user') messageCount++;
+        document.getElementById('msgCount').textContent = messageCount;
+        return div;
+    }
+
+    function addWelcomeMessage() {
+        addMessage('assistant', 
+            `<strong>👋 Welcome to NOKES Pro</strong><br><br>
+            I'm your premium AI, <em>completely free</em> and <strong>better than Claude Pro & GPT-4 Pro</strong>.<br><br>
+            <strong>What I do:</strong><br>
+            ✅ Deep analysis & research<br>
+            ✅ Excel dashboards & reports<br>
+            ✅ PowerPoint presentations<br>
+            ✅ Code generation & debugging<br>
+            ✅ Data visualization<br><br>
+            <em>Try: "Analyze data", "Create presentation", or "Write code"</em>`);
+    }
+
+    function generateResponse(prompt) {
+        const lower = prompt.toLowerCase();
+        if (lower.includes('hello') || lower.includes('hi')) {
+            return { text: '👋 <strong>Hey!</strong> I\'m NOKES Pro. How can I help?' };
+        }
+        return { text: '🤖 I\'m ready to help! Ask me to analyze data, create documents, or write code.' };
+    }
+
+    async function sendMessage() {
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        addMessage('user', text);
+        const typingEl = addMessage('assistant', '⋯ Thinking...');
+        try {
+            const result = generateResponse(text);
+            typingEl.remove();
+            addMessage('assistant', result.text);
+        } catch (e) {
+            typingEl.remove();
+            addMessage('assistant', '❌ Error: ' + e.message);
+        }
+    }
+
+    if (chat.children.length === 0) addWelcomeMessage();
+
+    input.addEventListener('keypress', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>

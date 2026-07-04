@@ -2,39 +2,423 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOKES - Neuro Optimizers Knowledge Exploration Systems</title>
-    
-    <!-- Core Libraries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>NOKES · Neuro Optimizers Knowledge Exploration Systems</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
     <style>
         :root {
-            --primary: #6C5CE7;
-            --secondary: #A8E6CF;
-            --accent: #FF6B6B;
-            --dark: #2D3436;
-            --light: #F8F9FA;
-            --gradient: linear-gradient(135deg, #6C5CE7 0%, #A8E6CF 100%);
+            --bg: #0b0b1a;
+            --surface: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #a78bfa;
+            --secondary: #6ee7b7;
+            --accent: #f472b6;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --radius: 24px;
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            color: white;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
+        /* Animated background */
+        .bg-glow {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(167,139,250,0.15), transparent 70%),
+                        radial-gradient(circle at 0% 100%, rgba(110,231,183,0.1), transparent 70%);
+            animation: moveGlow 20s ease-in-out infinite;
+        }
+        @keyframes moveGlow {
+            0%,100% { transform: translate(0,0); }
+            50% { transform: translate(10%,5%); }
+        }
+
+        /* App container */
+        .app {
+            position: relative; z-index: 1;
+            display: flex; flex-direction: column;
+            height: 100%; max-width: 700px;
+            margin: 0 auto; width: 100%;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px 20px;
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(11,11,26,0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+        }
+        .logo-icon { font-size: 32px; }
+        .brand { flex:1; }
+        .brand h1 {
+            font-size: 22px; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brand p { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
+        .status {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--surface); padding: 6px 12px;
+            border-radius: 20px; font-size: 12px; color: var(--text-secondary);
+        }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #10b981; box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* Chat area */
+        .chat {
+            flex: 1; overflow-y: auto; padding: 20px 16px;
+            display: flex; flex-direction: column; gap: 18px;
+        }
+        .message {
+            display: flex; gap: 10px; max-width: 85%;
+            animation: slideUp 0.3s ease-out;
+        }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message.assistant { align-self: flex-start; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } }
+
+        .avatar {
+            width: 38px; height: 38px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+            background: var(--surface); backdrop-filter: blur(10px);
+        }
+        .bubble {
+            padding: 14px 18px; border-radius: 20px;
+            line-height: 1.5; font-size: 15px;
+            background: var(--surface); backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            word-break: break-word;
+        }
+        .user .bubble {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border: none; color: white;
+        }
+        .bubble strong { color: var(--secondary); }
+        .bubble code {
+            background: rgba(0,0,0,0.3); padding: 2px 6px;
+            border-radius: 8px; font-size: 13px;
+        }
+
+        /* File attachment card */
+        .file-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 12px; margin-top: 8px;
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; transition: 0.2s;
+        }
+        .file-card:hover { background: rgba(167,139,250,0.1); }
+        .file-icon { font-size: 28px; }
+
+        /* Input area */
+        .input-area {
+            padding: 12px 16px calc(12px + var(--safe-bottom));
+            background: rgba(11,11,26,0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex; gap: 10px; align-items: flex-end;
+            z-index: 10;
+        }
+        .input-wrapper {
+            flex: 1; display: flex; align-items: flex-end;
+            background: var(--surface); border-radius: 28px;
+            border: 1px solid var(--border); padding: 6px 8px;
+            transition: 0.2s;
+        }
+        .input-wrapper:focus-within {
+            border-color: var(--primary); box-shadow: 0 0 15px rgba(167,139,250,0.2);
+        }
+        textarea {
+            flex: 1; background: transparent; border: none;
+            color: var(--text); font-size: 16px; resize: none;
+            padding: 8px 12px; max-height: 120px; outline: none;
+            font-family: inherit;
+        }
+        textarea::placeholder { color: var(--text-secondary); }
+        .attach-btn, .send-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--surface); border: 1px solid var(--border);
+            color: var(--text); font-size: 18px; display: flex;
+            align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s; flex-shrink: 0;
+        }
+        .attach-btn:active, .send-btn:active { transform: scale(0.95); }
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border: none; color: white; font-size: 22px;
+        }
+        .attach-btn input { display: none; }
+
+        /* API settings floating button */
+        .settings-btn {
+            position: fixed; top: 16px; right: 16px;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--surface); backdrop-filter: blur(10px);
+            border: 1px solid var(--border); z-index: 20;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; color: var(--text);
+        }
+        .settings-panel {
+            position: fixed; top: 0; right: 0; width: 320px; height: 100vh;
+            background: rgba(15,15,30,0.95); backdrop-filter: blur(30px);
+            border-left: 1px solid var(--border); z-index: 30;
+            padding: 20px; transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+        }
+        .settings-panel.open { transform: translateX(0); }
+        .settings-panel h3 { color: var(--primary); margin-bottom: 8px; }
+        .settings-panel select, .settings-panel input {
+            width: 100%; padding: 12px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: var(--text); font-size: 14px; outline: none;
+        }
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 25; display: none;
+        }
+        .overlay.show { display: block; }
+
+        @media (max-width: 400px) {
+            .brand h1 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <!-- Settings panel -->
+    <div class="overlay" id="overlay" onclick="toggleSettings()"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <h3>⚙️ AI Configuration</h3>
+        <select id="provider" onchange="updateModelList()">
+            <option value="simulation">🧪 Simulation Mode (No API Key)</option>
+            <option value="openai">OpenAI (GPT-4)</option>
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="google">Google (Gemini)</option>
+        </select>
+        <input type="password" id="apiKey" placeholder="API Key (only for cloud AI)" />
+        <select id="model"></select>
+        <p style="font-size:12px; color:var(--text-secondary)">Your key is stored locally, never uploaded.</p>
+        <button onclick="saveSettings()" style="background:var(--primary); border:none; padding:12px; border-radius:14px; color:white; font-weight:bold; margin-top:auto;">Save & Close</button>
+    </div>
+
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-icon">🧠</div>
+            <div class="brand">
+                <h1>NOKES</h1>
+                <p>Neuro Optimizers Knowledge Exploration Systems</p>
+            </div>
+            <div class="status"><span class="status-dot"></span> Ready</div>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat" id="chat">
+            <div class="message assistant">
+                <div class="avatar">🧠</div>
+                <div class="bubble">
+                    <strong>NOKES online.</strong><br>
+                    I create <strong>Excel dashboards</strong>, <strong>PowerPoint presentations</strong>, analyze data, and more.<br><br>
+                    <em>Try: “Create a sales tracker Excel” or “Make a 5-slide pitch deck”</em>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <label class="attach-btn">
+                📎 <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.json,.txt" onchange="handleFiles(this.files)">
+            </label>
+            <div class="input-wrapper">
+                <textarea id="userInput" rows="1" placeholder="Ask NOKES to create anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
+            </div>
+            <button class="send-btn" onclick="send()">➤</button>
+        </div>
+    </div>
+
+    <!-- Settings toggle -->
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+    <script>
+        // ========== GLOBAL STATE ==========
+        let filesForContext = [];
+        let generatedFiles = [];
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('userInput');
+
+        // ========== SETTINGS ==========
+        function toggleSettings() {
+            document.getElementById('settingsPanel').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('show');
+        }
+        function updateModelList() {
+            const prov = document.getElementById('provider').value;
+            const modelSelect = document.getElementById('model');
+            const models = {
+                simulation: [{v:'sim',t:'Simulated AI'}],
+                openai: [{v:'gpt-4-turbo',t:'GPT-4 Turbo'},{v:'gpt-4',t:'GPT-4'}],
+                anthropic: [{v:'claude-3-opus',t:'Claude 3 Opus'}],
+                google: [{v:'gemini-pro',t:'Gemini Pro'}]
+            };
+            modelSelect.innerHTML = models[prov].map(m => `<option value="${m.v}">${m.t}</option>`).join('');
+        }
+        function saveSettings() {
+            localStorage.setItem('nokes_provider', document.getElementById('provider').value);
+            localStorage.setItem('nokes_api_key', document.getElementById('apiKey').value);
+            localStorage.setItem('nokes_model', document.getElementById('model').value);
+            toggleSettings();
+            addMessage('assistant','⚙️ Settings saved. Current mode: <strong>' + (document.getElementById('provider').value === 'simulation' ? 'Simulation (works offline)' : 'Cloud AI') + '</strong>.');
+        }
+        // Load saved
+        (function loadStored() {
+            if(localStorage.getItem('nokes_provider')) document.getElementById('provider').value = localStorage.getItem('nokes_provider');
+            if(localStorage.getItem('nokes_api_key')) document.getElementById('apiKey').value = localStorage.getItem('nokes_api_key');
+            updateModelList();
+            if(localStorage.getItem('nokes_model')) document.getElementById('model').value = localStorage.getItem('nokes_model');
+        })();
+
+        // ========== CHAT ==========
+        function addMessage(role, html) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.innerHTML = `<div class="avatar">${role==='user'?'👤':'🧠'}</div><div class="bubble">${html}</div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function typingIndicator() {
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'message assistant';
+            div.innerHTML = `<div class="avatar">🧠</div><div class="bubble"><span class="dot-pulse">⋯</span></div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if(el) el.remove();
+        }
+
+        // ========== FILE HANDLING ==========
+        function handleFiles(fileList) {
+            filesForContext = [];
+            Array.from(fileList).forEach(f => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    filesForContext.push({name:f.name, data:e.target.result});
+                };
+                reader.readAsText(f);
+            });
+            addMessage('user', `📎 Attached ${fileList.length} file(s)`);
+        }
+
+        // ========== DOCUMENT GENERATION ==========
+        function generateExcel(filename = 'NOKES_Dashboard.xlsx', customData = null) {
+            const wb = XLSX.utils.book_new();
+            let data = customData || [
+                ['Date','Category','Revenue','Status'],
+                ['2024-07-01','Product A',15000,'Completed'],
+                ['2024-07-02','Product B',12500,'In Progress'],
+                ['2024-07-03','Service',18000,'Completed'],
+                ['2024-07-04','Product A',22000,'Pending'],
+                ['2024-07-05','Service',19500,'Completed']
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Dashboard');
+            const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+            const blob = new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            saveAs(blob, filename);
+            addMessage('assistant', `📊 <strong>Excel generated:</strong> ${filename} <button onclick="saveAs(new Blob(['${blob.size}']),'${filename}')" style="background:var(--primary);border:none;color:white;padding:4px 8px;border-radius:8px;margin-left:8px;">⬇️ Download Again</button>`);
+        }
+
+        function generatePPT(filename = 'NOKES_Presentation.pptx', slidesContent = null) {
+            const pptx = new PptxGenJS();
+            // Title slide
+            const slide1 = pptx.addSlide();
+            slide1.background = {fill:'#0b0b1a'};
+            slide1.addText('NOKES Presentation', {x:0.5,y:1.5,w:'90%',h:1.5,fontSize:36,color:'a78bfa',bold:true});
+            slide1.addText('Powered by Neuro Optimizers KES', {x:0.5,y:3.5,w:'90%',h:0.5,fontSize:12,color:'94a3b8'});
+            
+            if(slidesContent && Array.isArray(slidesContent)) {
+                slidesContent.forEach((text,i) => {
+                    const slide = pptx.addSlide();
+                    slide.addText(`Slide ${i+2}`, {x:0.5,y:0.5,w:'90%',h:0.8,fontSize:22,bold:true,color:'6ee7b7'});
+                    slide.addText(text, {x:1,y:1.5,w:'80%',h:3,fontSize:16,color:'f1f5f9'});
+                });
+            } else {
+                for(let i=0;i<3;i++) {
+                    const slide = pptx.addSlide();
+                    slide.addText(`Topic ${i+1}`, {x:0.5,y:0.5,fontSize:22,bold:true,color:'6ee7b7'});
+                    slide.addText('Your content here — NOKES can customize this based on your request.', {x:1,y:2,w:'80%',h:2,fontSize:14,color:'f1f5f9'});
+                }
+            }
+            pptx.writeFile({fileName:filename});
+            addMessage('assistant', `📊 <strong>PowerPoint created:</strong> ${filename}`);
+        }
+
+        // ========== AI SIMULATION (Offline Mode) ==========
+        function simulateAI(prompt) {
+            const lower = prompt.toLowerCase();
+            let response = '';
+            const files = [];
+            
+            if (lower.includes('excel') || lower.includes('spreadsheet') || lower.includes('dashboard') || lower.includes('tracker')) {
+                response = "I've created an **Excel dashboard** for you with sample data. You can open it in Excel or Google Sheets. I included columns for Date, Category, Revenue, and Status.";
+                files.push({type:'excel', name:'NOKES_Dashboard.xlsx'});
+            }
+            else if (lower.includes('powerpoint') || lower.includes('presentation') || lower.includes('slides') || lower.includes('deck')) {
+                response = "I've generated a **PowerPoint presentation** with a title slide and three content slides. Download it and customize further!";
+                files.push({type:'pptx', name:'NOKES_Presentation.pptx'});
+            }
+            else if (lower.includes('code') || lower.includes('script') || lower.includes('function')) {
+                response = "Here's a code snippet based on your request:\n```javascript\nfunction helloWorld() {\n  console.log('Hello from NOKES');\n}\n```\nI can also generate full script files.";
+            }
+            else if (filesForContext.length > 0) {
+                response = "I've analyzed your uploaded file. I can create an Excel dashboard or PowerPoint summary from this data. Would you like me to generate one?";
+            }
+            else {
+                response = "I'm NOKES, your AI assistant. I can create **Excel dashboards**, **PowerPoint presentations**, analyze data, or generate code. Just tell me what you need! For example:\n- \"Create a sales tracker Excel\"\n- \"Make a 5-slide pitch deck\"\n- \"Analyze my CSV file\"";
+            }
+            return {text: response, files};
+        }
+
+        // ========== SEND MESSAGE ==========
+        async function send() {
+            const text = input.value.trim();
+            if (!text && filesForContext.length===0) return;
+            input.value = '';
+            
+            addMessage('user', text || '📎 File attached');
+            const typingId = typingIndicator();
+            
+            try {
+                const provider = document.getElementById('provider').value;
+                const apiKey = document.getElementById('apiKey').value;
+                
+                let aiResponse;
+                if (provider ===         }
 
         .neural-bg {
             position: fixed;

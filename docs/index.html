@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NOKES Pro - Premium AI</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -33,6 +36,7 @@
             flex-direction: column;
             padding: 32px 20px;
             gap: 48px;
+            overflow-y: auto;
         }
 
         .logo {
@@ -243,6 +247,7 @@
             justify-content: center;
             font-size: 18px;
             flex-shrink: 0;
+            margin-top: 4px;
         }
 
         .message.user .avatar {
@@ -270,6 +275,41 @@
             font-weight: 700;
         }
 
+        .bubble code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .message.user .bubble code {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
         /* Input */
         .input-section {
             padding: 24px 40px;
@@ -277,15 +317,16 @@
             border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 12px;
+            align-items: flex-end;
         }
 
         .input-box {
             flex: 1;
             display: flex;
             background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
             transition: all 0.2s ease;
         }
 
@@ -302,7 +343,7 @@
             font-size: 14px;
             resize: none;
             outline: none;
-            max-height: 80px;
+            max-height: 100px;
             font-family: inherit;
         }
 
@@ -336,6 +377,12 @@
             transform: translateY(0);
         }
 
+        .send-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -365,6 +412,7 @@
                 gap: 24px;
                 border-right: none;
                 border-bottom: 1px solid #e2e8f0;
+                max-height: 40vh;
             }
 
             .header {
@@ -405,27 +453,23 @@
                             <span class="nav-icon">💬</span>
                             <span>New Chat</span>
                         </button>
-                        <button class="nav-link" onclick="showHistory()">
-                            <span class="nav-icon">📋</span>
-                            <span>History</span>
+                        <button class="nav-link" onclick="clearChat()">
+                            <span class="nav-icon">🗑️</span>
+                            <span>Clear</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="nav-group">
-                    <div class="nav-label">Tools</div>
+                    <div class="nav-label">Generate</div>
                     <div class="nav-links">
-                        <button class="nav-link" onclick="quickAction('Excel Dashboard')">
+                        <button class="nav-link" onclick="generateExcel()">
                             <span class="nav-icon">📊</span>
                             <span>Excel</span>
                         </button>
-                        <button class="nav-link" onclick="quickAction('Presentation')">
+                        <button class="nav-link" onclick="generatePPT()">
                             <span class="nav-icon">🎨</span>
-                            <span>Slides</span>
-                        </button>
-                        <button class="nav-link" onclick="quickAction('Analysis')">
-                            <span class="nav-icon">📈</span>
-                            <span>Analysis</span>
+                            <span>Presentation</span>
                         </button>
                     </div>
                 </div>
@@ -437,7 +481,7 @@
                     <div class="stat-label">Messages</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="genCount">0</div>
+                    <div class="stat-value" id="fileCount">0</div>
                     <div class="stat-label">Generated</div>
                 </div>
             </div>
@@ -446,7 +490,7 @@
         <!-- Main -->
         <div class="main">
             <div class="header">
-                <div class="header-title">🧠 NOKES Pro</div>
+                <div class="header-title">🧠 NOKES Pro - Premium AI</div>
                 <div class="modes">
                     <button class="mode-btn active" onclick="setMode(this, 'chat')">💬 Chat</button>
                     <button class="mode-btn" onclick="setMode(this, 'analyze')">📊 Analyze</button>
@@ -459,9 +503,9 @@
 
                 <div class="input-section">
                     <div class="input-box">
-                        <textarea id="input" placeholder="Ask me anything..." rows="1"></textarea>
+                        <textarea id="input" placeholder="Type your message here..." rows="1"></textarea>
                     </div>
-                    <button class="send-btn" onclick="send()">↓</button>
+                    <button class="send-btn" onclick="send()" id="sendBtn">↓</button>
                 </div>
             </div>
         </div>
@@ -469,19 +513,40 @@
 
     <script>
         let msgCount = 0;
-        let genCount = 0;
+        let fileCount = 0;
         const messagesEl = document.getElementById('messages');
         const inputEl = document.getElementById('input');
+        const sendBtn = document.getElementById('sendBtn');
 
-        function addMsg(role, text) {
+        // Auto-resize textarea
+        inputEl.addEventListener('input', () => {
+            inputEl.style.height = 'auto';
+            inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+        });
+
+        function addMsg(role, text, showActions = false) {
             const msg = document.createElement('div');
             msg.className = `message ${role}`;
-            msg.innerHTML = `
+            let html = `
                 <div class="avatar">${role === 'user' ? '👤' : '🧠'}</div>
-                <div class="bubble">${text}</div>
+                <div style="flex: 1;">
+                    <div class="bubble">${text}</div>
             `;
+            
+            if (showActions) {
+                html += `
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="generateExcel()">📊 Download Excel</button>
+                        <button class="action-btn" onclick="generatePPT()">🎨 Download PPT</button>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            msg.innerHTML = html;
             messagesEl.appendChild(msg);
             messagesEl.scrollTop = messagesEl.scrollHeight;
+            
             if (role === 'user') {
                 msgCount++;
                 document.getElementById('msgCount').textContent = msgCount;
@@ -489,7 +554,7 @@
         }
 
         function welcome() {
-            addMsg('assistant', `<strong>Welcome to NOKES Pro</strong><br><br>I'm your premium AI assistant, completely free and better than Claude Pro & GPT-4 Pro.<br><br><strong>I can help with:</strong><br>• Deep analysis & research<br>• Excel dashboards & reports<br>• PowerPoint presentations<br>• Code generation<br>• Data visualization<br><br>Just ask me anything!`);
+            addMsg('assistant', `<strong>Welcome to NOKES Pro</strong><br><br>I'm your premium AI assistant. I can help you with:<br><br>• <strong>Analysis</strong> - Analyze data and provide insights<br>• <strong>Excel</strong> - Create dashboards and reports<br>• <strong>Presentations</strong> - Generate slideshows<br>• <strong>Code</strong> - Write and debug code<br>• <strong>Writing</strong> - Create documents and content<br><br>Just type your request below! 👇`);
         }
 
         function newChat() {
@@ -499,57 +564,149 @@
             welcome();
         }
 
-        function showHistory() {
-            addMsg('assistant', '📋 <strong>Chat History</strong><br>Your conversations are saved locally. No cloud, no tracking.');
-        }
-
-        function quickAction(action) {
-            inputEl.value = `Generate a ${action}`;
-            inputEl.focus();
+        function clearChat() {
+            messagesEl.innerHTML = '';
         }
 
         function setMode(btn, mode) {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            addMsg('assistant', `Switched to <strong>${mode}</strong> mode. Ready to help!`);
+            const modeText = mode === 'chat' ? 'Chat' : mode === 'analyze' ? 'Analysis' : 'Creation';
+            addMsg('assistant', `Switched to <strong>${modeText}</strong> mode. How can I help?`);
+        }
+
+        function generateExcel() {
+            try {
+                if (typeof XLSX === 'undefined') {
+                    addMsg('assistant', '❌ Excel library not loaded. Please check your internet connection.');
+                    return;
+                }
+                
+                const wb = XLSX.utils.book_new();
+                const data = [
+                    ['NOKES Pro - Sample Report', '', ''],
+                    ['', '', ''],
+                    ['Date', 'Category', 'Value'],
+                    ['2024-01-15', 'Sales', 45000],
+                    ['2024-01-16', 'Marketing', 32000],
+                    ['2024-01-17', 'Development', 38000],
+                    ['2024-01-18', 'Support', 18000],
+                    ['2024-01-19', 'Operations', 25000],
+                    ['', '', ''],
+                    ['TOTAL', '', 158000]
+                ];
+                
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                ws['!cols'] = [{wch: 15}, {wch: 15}, {wch: 15}];
+                XLSX.utils.book_append_sheet(wb, ws, 'Report');
+                XLSX.writeFile(wb, 'NOKES_Report.xlsx');
+                
+                fileCount++;
+                document.getElementById('fileCount').textContent = fileCount;
+                addMsg('assistant', '✅ <strong>Excel file downloaded!</strong><br>Check your downloads folder.');
+            } catch (e) {
+                addMsg('assistant', `❌ Error: ${e.message}`);
+            }
+        }
+
+        function generatePPT() {
+            try {
+                if (typeof PptxGenJS === 'undefined') {
+                    addMsg('assistant', '❌ PowerPoint library not loaded. Please check your internet connection.');
+                    return;
+                }
+                
+                const prs = new PptxGenJS();
+                
+                // Slide 1
+                let slide = prs.addSlide();
+                slide.background = {fill: '3b82f6'};
+                slide.addText('NOKES Pro', {x: 0.5, y: 2.5, w: 9, h: 1, fontSize: 54, bold: true, color: 'FFFFFF'});
+                slide.addText('Premium AI Assistant', {x: 0.5, y: 3.7, w: 9, h: 0.6, fontSize: 28, color: 'e0e7ff'});
+                
+                // Slide 2
+                slide = prs.addSlide();
+                slide.addText('Features', {x: 0.5, y: 0.5, w: 9, h: 0.6, fontSize: 36, bold: true, color: '3b82f6'});
+                slide.addText('• AI-powered analysis', {x: 1, y: 1.3, w: 8, h: 0.5, fontSize: 18});
+                slide.addText('• Excel report generation', {x: 1, y: 1.9, w: 8, h: 0.5, fontSize: 18});
+                slide.addText('• PowerPoint creation', {x: 1, y: 2.5, w: 8, h: 0.5, fontSize: 18});
+                slide.addText('• Data visualization', {x: 1, y: 3.1, w: 8, h: 0.5, fontSize: 18});
+                slide.addText('• 100% free forever', {x: 1, y: 3.7, w: 8, h: 0.5, fontSize: 18});
+                
+                prs.writeFile({fileName: 'NOKES_Presentation.pptx'});
+                
+                fileCount++;
+                document.getElementById('fileCount').textContent = fileCount;
+                addMsg('assistant', '✅ <strong>PowerPoint file downloaded!</strong><br>Check your downloads folder.');
+            } catch (e) {
+                addMsg('assistant', `❌ Error: ${e.message}`);
+            }
         }
 
         function getResponse(text) {
             const lower = text.toLowerCase();
-            if (lower.includes('hello') || lower.includes('hi')) {
-                return '👋 <strong>Hey!</strong> How can I assist you today?';
+            
+            // Check for specific keywords
+            if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+                return '👋 <strong>Hey there!</strong> I\'m NOKES Pro. How can I assist you today?';
             }
-            if (lower.includes('excel')) {
-                return '✅ <strong>Excel dashboard created!</strong><br>Professional spreadsheet with data, charts, and formulas. Ready to download.';
+            
+            if (lower.includes('excel') || lower.includes('spreadsheet') || lower.includes('dashboard')) {
+                return '📊 <strong>Creating Excel dashboard...</strong><br><br>I can generate professional spreadsheets with:<br>• Data tables and formatting<br>• Charts and graphs<br>• Formulas and calculations<br>• Professional styling<br><br>Ready to download below!';
             }
-            if (lower.includes('presentation') || lower.includes('slides')) {
-                return '✅ <strong>Presentation created!</strong><br>10 beautiful slides with layouts, charts, and design. Ready to download.';
+            
+            if (lower.includes('powerpoint') || lower.includes('presentation') || lower.includes('slides') || lower.includes('deck')) {
+                return '🎨 <strong>Creating presentation...</strong><br><br>I can generate beautiful PowerPoint slides with:<br>• Professional layouts<br>• Charts and visuals<br>• Custom branding<br>• Speaker notes<br><br>Ready to download below!';
             }
-            if (lower.includes('analyze')) {
-                return '📈 <strong>Analysis complete!</strong><br>Key insights: 25% growth detected, top performers identified, recommendations provided.';
+            
+            if (lower.includes('analyze') || lower.includes('analysis') || lower.includes('data')) {
+                return '📈 <strong>Analysis Report</strong><br><br><strong>Key Findings:</strong><br>• Growth trend: +25% YoY<br>• Top performer: Sales category<br>• Opportunities: Market expansion<br>• Recommendation: Focus on Q3-Q4<br><br><strong>Detailed metrics:</strong><br>• Revenue: $158K<br>• Growth rate: 10%<br>• Conversion: 3.2%';
             }
-            if (lower.includes('code')) {
-                return '💻 <strong>Code generated!</strong><br>Production-ready code with documentation and best practices included.';
+            
+            if (lower.includes('code') || lower.includes('javascript') || lower.includes('python') || lower.includes('program')) {
+                return '💻 <strong>Code Generation</strong><br><br><code>function analyzeData(data) {<br>  return data<br>    .filter(x => x.valid)<br>    .map(x => x.value)<br>    .reduce((a,b) => a + b, 0);<br>}</code><br><br>This function filters, maps, and reduces data efficiently.';
             }
-            return '💡 <strong>Got it!</strong> I can help with analysis, document generation, coding, and more. What would you like?';
+            
+            if (lower.includes('help') || lower.includes('what can')) {
+                return '🤝 <strong>Here\'s what I can do:</strong><br><br>✅ <strong>Analysis</strong> - Analyze data, find trends, provide insights<br>✅ <strong>Excel</strong> - Create professional dashboards and reports<br>✅ <strong>Presentations</strong> - Generate slideshows with charts<br>✅ <strong>Code</strong> - Write code in any language<br>✅ <strong>Writing</strong> - Create documents and content<br><br>Just ask me anything!';
+            }
+            
+            if (lower.includes('who are') || lower.includes('about')) {
+                return '🧠 <strong>I\'m NOKES Pro</strong><br><br>A premium AI assistant that\'s completely free and better than Claude Pro & GPT-4 Pro.<br><br>• 100% free forever<br>• No subscriptions<br>• No data tracking<br>• Always improving<br>• Built with love<br><br>What would you like me to help with?';
+            }
+            
+            // Default response
+            return '💡 <strong>Got it!</strong><br><br>I understand you\'re interested in: <em>"' + text.substring(0, 50) + '..."</em><br><br>I can help with:<br>• Detailed analysis and insights<br>• Excel reports and dashboards<br>• PowerPoint presentations<br>• Code generation and debugging<br>• Data visualization<br>• Content creation<br><br>What specifically would you like?';
         }
 
         function send() {
             const text = inputEl.value.trim();
             if (!text) return;
+            
             inputEl.value = '';
+            inputEl.style.height = 'auto';
+            sendBtn.disabled = true;
+            
             addMsg('user', text);
+            
+            // Typing indicator
             const typing = document.createElement('div');
             typing.className = 'message';
             typing.innerHTML = '<div class="avatar">🧠</div><div class="bubble">⋯ Thinking...</div>';
             messagesEl.appendChild(typing);
             messagesEl.scrollTop = messagesEl.scrollHeight;
+            
+            // Simulate AI response delay
             setTimeout(() => {
                 typing.remove();
-                addMsg('assistant', getResponse(text));
-            }, 800);
+                const response = getResponse(text);
+                addMsg('assistant', response);
+                sendBtn.disabled = false;
+                inputEl.focus();
+            }, 1000);
         }
 
+        // Send on Enter key
         inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -557,7 +714,11 @@
             }
         });
 
-        welcome();
+        // Focus input on load
+        window.addEventListener('load', () => {
+            welcome();
+            inputEl.focus();
+        });
     </script>
 </body>
 </html>

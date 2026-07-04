@@ -12,32 +12,32 @@
         }
 
         body {
-            background: #ffffff;
-            color: #1f2937;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             height: 100vh;
             overflow: hidden;
         }
 
-        .app {
+        .container {
             display: flex;
             height: 100vh;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 300px;
-            background: #f9fafb;
-            border-right: 1px solid #e5e7eb;
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            padding: 24px 16px;
-            gap: 32px;
+            padding: 32px 20px;
+            gap: 48px;
         }
 
-        .logo-section {
+        .logo {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 12px;
         }
 
@@ -46,44 +46,55 @@
         }
 
         .logo-text h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -1px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.5px;
         }
 
         .logo-text p {
             font-size: 12px;
-            color: #6b7280;
-            margin-top: 4px;
+            color: #64748b;
+            margin-top: 2px;
             font-weight: 500;
         }
 
-        .nav-menu {
+        .nav {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 24px;
+        }
+
+        .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .nav-label {
             font-size: 11px;
             font-weight: 700;
-            color: #9ca3af;
             text-transform: uppercase;
+            color: #94a3b8;
             letter-spacing: 0.5px;
             padding: 0 8px;
-            margin-bottom: 8px;
         }
 
-        .nav-item {
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 12px;
+            gap: 10px;
+            padding: 10px 12px;
             background: transparent;
-            border: 1px solid transparent;
+            border: none;
             border-radius: 8px;
-            color: #4b5563;
+            color: #475569;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
@@ -91,135 +102,130 @@
             font-family: inherit;
         }
 
-        .nav-item:hover {
-            background: #f3f4f6;
-            border-color: #e5e7eb;
-            color: #1f2937;
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
         }
 
-        .nav-item.active {
+        .nav-link.active {
             background: #3b82f6;
-            color: #ffffff;
-            border-color: #3b82f6;
-        }
-
-        .nav-item:active {
-            transform: scale(0.98);
+            color: white;
         }
 
         .nav-icon {
-            font-size: 18px;
+            font-size: 16px;
+            width: 18px;
         }
 
-        .stats-box {
+        .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 16px;
-            background: #f3f4f6;
+            gap: 16px;
+            padding: 20px;
+            background: #f8fafc;
             border-radius: 12px;
             margin-top: auto;
         }
 
-        .stat-item {
+        .stat {
             text-align: center;
         }
 
-        .stat-number {
-            font-size: 20px;
+        .stat-value {
+            font-size: 24px;
             font-weight: 700;
             color: #3b82f6;
         }
 
-        .stat-name {
-            font-size: 11px;
-            color: #6b7280;
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
             margin-top: 4px;
         }
 
-        /* Main Content */
-        .main-content {
+        /* Main */
+        .main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #ffffff;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         }
 
-        .top-bar {
-            height: 64px;
+        .header {
+            height: 72px;
             background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 32px;
+            padding: 0 40px;
         }
 
-        .top-title {
-            font-size: 18px;
+        .header-title {
+            font-size: 20px;
             font-weight: 700;
-            color: #111827;
+            color: #0f172a;
         }
 
-        .mode-buttons {
+        .modes {
             display: flex;
             gap: 8px;
         }
 
         .mode-btn {
             padding: 8px 16px;
-            border: 1px solid #e5e7eb;
-            background: #f9fafb;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
             border-radius: 6px;
+            color: #475569;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            color: #4b5563;
             transition: all 0.2s ease;
             font-family: inherit;
         }
 
         .mode-btn:hover {
-            background: #f3f4f6;
+            background: #e2e8f0;
         }
 
         .mode-btn.active {
             background: #3b82f6;
-            color: #ffffff;
+            color: white;
             border-color: #3b82f6;
         }
 
-        /* Chat Container */
-        .chat-container {
+        /* Chat */
+        .chat {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .messages-area {
+        .messages {
             flex: 1;
             overflow-y: auto;
-            padding: 32px;
+            padding: 40px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .msg {
+        .message {
             display: flex;
             gap: 12px;
-            animation: fadeIn 0.3s ease;
+            animation: slideUp 0.3s ease;
         }
 
-        .msg.user {
+        .message.user {
             justify-content: flex-end;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -231,87 +237,80 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: #f3f4f6;
+            background: #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             flex-shrink: 0;
         }
 
-        .msg.user .avatar {
+        .message.user .avatar {
             background: #3b82f6;
             color: white;
         }
 
-        .content {
-            max-width: 65%;
-            background: #f3f4f6;
-            padding: 12px 16px;
-            border-radius: 12px;
+        .bubble {
+            max-width: 60%;
+            background: #f1f5f9;
+            padding: 14px 18px;
+            border-radius: 14px;
             font-size: 14px;
             line-height: 1.6;
+            word-wrap: break-word;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .msg.user .content {
+        .message.user .bubble {
             background: #3b82f6;
-            color: #ffffff;
+            color: white;
         }
 
-        .content strong {
-            color: inherit;
+        .bubble strong {
             font-weight: 700;
         }
 
-        .content em {
-            color: inherit;
-            font-style: italic;
-        }
-
-        /* Input Area */
-        .input-area {
-            padding: 20px 32px;
-            border-top: 1px solid #e5e7eb;
+        /* Input */
+        .input-section {
+            padding: 24px 40px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
             display: flex;
             gap: 12px;
-            align-items: flex-end;
-            background: #ffffff;
         }
 
-        .input-wrapper {
+        .input-box {
             flex: 1;
             display: flex;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 12px 14px;
             transition: all 0.2s ease;
-            gap: 8px;
         }
 
-        .input-wrapper:focus-within {
+        .input-box:focus-within {
             border-color: #3b82f6;
-            background: #ffffff;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .input-wrapper textarea {
+        .input-box textarea {
             flex: 1;
             background: transparent;
             border: none;
+            color: #0f172a;
             font-size: 14px;
-            color: #1f2937;
             resize: none;
             outline: none;
-            max-height: 100px;
+            max-height: 80px;
             font-family: inherit;
         }
 
-        .input-wrapper textarea::placeholder {
-            color: #9ca3af;
+        .input-box textarea::placeholder {
+            color: #94a3b8;
         }
 
-        .send-button {
+        .send-btn {
             width: 40px;
             height: 40px;
             border-radius: 8px;
@@ -327,12 +326,13 @@
             font-weight: 700;
         }
 
-        .send-button:hover {
+        .send-btn:hover {
             background: #2563eb;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .send-button:active {
+        .send-btn:active {
             transform: translateY(0);
         }
 
@@ -346,209 +346,214 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
+            background: #cbd5e1;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
+            background: #94a3b8;
         }
 
         @media (max-width: 768px) {
-            .app {
+            .container {
                 flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
-                padding: 12px;
-                gap: 12px;
+                padding: 16px 12px;
+                gap: 24px;
                 border-right: none;
-                border-bottom: 1px solid #e5e7eb;
-                overflow-x: auto;
+                border-bottom: 1px solid #e2e8f0;
             }
 
-            .content {
-                max-width: 90%;
+            .header {
+                padding: 0 20px;
+            }
+
+            .messages {
+                padding: 20px;
+            }
+
+            .bubble {
+                max-width: 85%;
+            }
+
+            .input-section {
+                padding: 16px 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app">
+    <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="logo-section">
+            <div class="logo">
                 <div class="logo-icon">🧠</div>
                 <div class="logo-text">
                     <h1>NOKES</h1>
-                    <p>Premium AI Chat</p>
+                    <p>Premium AI</p>
                 </div>
             </div>
 
-            <div>
-                <div class="nav-label">Chat</div>
-                <div class="nav-menu">
-                    <button class="nav-item active" onclick="newChat()">
-                        <span class="nav-icon">💬</span>
-                        <span>New Chat</span>
-                    </button>
-                    <button class="nav-item" onclick="viewHistory()">
-                        <span class="nav-icon">📋</span>
-                        <span>History</span>
-                    </button>
+            <div class="nav">
+                <div class="nav-group">
+                    <div class="nav-label">Chat</div>
+                    <div class="nav-links">
+                        <button class="nav-link active" onclick="newChat()">
+                            <span class="nav-icon">💬</span>
+                            <span>New Chat</span>
+                        </button>
+                        <button class="nav-link" onclick="showHistory()">
+                            <span class="nav-icon">📋</span>
+                            <span>History</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-label">Tools</div>
+                    <div class="nav-links">
+                        <button class="nav-link" onclick="quickAction('Excel Dashboard')">
+                            <span class="nav-icon">📊</span>
+                            <span>Excel</span>
+                        </button>
+                        <button class="nav-link" onclick="quickAction('Presentation')">
+                            <span class="nav-icon">🎨</span>
+                            <span>Slides</span>
+                        </button>
+                        <button class="nav-link" onclick="quickAction('Analysis')">
+                            <span class="nav-icon">📈</span>
+                            <span>Analysis</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <div class="nav-label">Tools</div>
-                <div class="nav-menu">
-                    <button class="nav-item" onclick="generateExcel()">
-                        <span class="nav-icon">📊</span>
-                        <span>Excel</span>
-                    </button>
-                    <button class="nav-item" onclick="generatePPT()">
-                        <span class="nav-icon">🎨</span>
-                        <span>Presentation</span>
-                    </button>
-                    <button class="nav-item" onclick="analyzeData()">
-                        <span class="nav-icon">📈</span>
-                        <span>Analysis</span>
-                    </button>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="msgCount">0</div>
+                    <div class="stat-label">Messages</div>
                 </div>
-            </div>
-
-            <div class="stats-box">
-                <div class="stat-item">
-                    <div class="stat-number" id="msgCount">0</div>
-                    <div class="stat-name">Messages</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="genCount">0</div>
-                    <div class="stat-name">Generated</div>
+                <div class="stat">
+                    <div class="stat-value" id="genCount">0</div>
+                    <div class="stat-label">Generated</div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div class="top-title">🧠 NOKES Pro</div>
-                <div class="mode-buttons">
+        <!-- Main -->
+        <div class="main">
+            <div class="header">
+                <div class="header-title">🧠 NOKES Pro</div>
+                <div class="modes">
                     <button class="mode-btn active" onclick="setMode(this, 'chat')">💬 Chat</button>
                     <button class="mode-btn" onclick="setMode(this, 'analyze')">📊 Analyze</button>
                     <button class="mode-btn" onclick="setMode(this, 'create')">✨ Create</button>
                 </div>
             </div>
 
-            <!-- Chat Area -->
-            <div class="chat-container">
-                <div class="messages-area" id="messages"></div>
+            <div class="chat">
+                <div class="messages" id="messages"></div>
 
-                <div class="input-area">
-                    <div class="input-wrapper">
-                        <textarea id="userInput" placeholder="Ask me anything..." rows="1"></textarea>
+                <div class="input-section">
+                    <div class="input-box">
+                        <textarea id="input" placeholder="Ask me anything..." rows="1"></textarea>
                     </div>
-                    <button class="send-button" onclick="sendMessage()">↓</button>
+                    <button class="send-btn" onclick="send()">↓</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let messageCount = 0;
-        let generatedCount = 0;
-        const messagesDiv = document.getElementById('messages');
-        const inputField = document.getElementById('userInput');
+        let msgCount = 0;
+        let genCount = 0;
+        const messagesEl = document.getElementById('messages');
+        const inputEl = document.getElementById('input');
 
-        function addMessage(role, text) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `msg ${role}`;
-            msgDiv.innerHTML = `
+        function addMsg(role, text) {
+            const msg = document.createElement('div');
+            msg.className = `message ${role}`;
+            msg.innerHTML = `
                 <div class="avatar">${role === 'user' ? '👤' : '🧠'}</div>
-                <div class="content">${text}</div>
+                <div class="bubble">${text}</div>
             `;
-            messagesDiv.appendChild(msgDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            messagesEl.appendChild(msg);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
             if (role === 'user') {
-                messageCount++;
-                document.getElementById('msgCount').textContent = messageCount;
+                msgCount++;
+                document.getElementById('msgCount').textContent = msgCount;
             }
         }
 
+        function welcome() {
+            addMsg('assistant', `<strong>Welcome to NOKES Pro</strong><br><br>I'm your premium AI assistant, completely free and better than Claude Pro & GPT-4 Pro.<br><br><strong>I can help with:</strong><br>• Deep analysis & research<br>• Excel dashboards & reports<br>• PowerPoint presentations<br>• Code generation<br>• Data visualization<br><br>Just ask me anything!`);
+        }
+
         function newChat() {
-            messagesDiv.innerHTML = '';
-            messageCount = 0;
+            messagesEl.innerHTML = '';
+            msgCount = 0;
             document.getElementById('msgCount').textContent = '0';
             welcome();
         }
 
-        function welcome() {
-            addMessage('assistant', `<strong>Welcome to NOKES Pro</strong><br><br>I'm your premium AI assistant, completely free and better than Claude Pro & GPT-4 Pro.<br><br><strong>I can help with:</strong><br>• Deep analysis & insights<br>• Excel dashboards<br>• Presentations & documents<br>• Code generation<br>• Data visualization<br><br>Just ask me anything!`);
+        function showHistory() {
+            addMsg('assistant', '📋 <strong>Chat History</strong><br>Your conversations are saved locally. No cloud, no tracking.');
         }
 
-        function viewHistory() {
-            addMessage('assistant', '📋 <strong>Chat History</strong><br>Your conversations are saved locally in your browser.');
-        }
-
-        function generateExcel() {
-            inputField.value = 'Create an Excel dashboard with sales data';
-            inputField.focus();
-        }
-
-        function generatePPT() {
-            inputField.value = 'Generate a professional PowerPoint presentation';
-            inputField.focus();
-        }
-
-        function analyzeData() {
-            addMessage('assistant', '📈 <strong>Data Analysis</strong><br>Upload a file and I\'ll provide detailed insights and visualizations.');
+        function quickAction(action) {
+            inputEl.value = `Generate a ${action}`;
+            inputEl.focus();
         }
 
         function setMode(btn, mode) {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            addMessage('assistant', `Switched to <strong>${mode.toUpperCase()}</strong> mode.`);
+            addMsg('assistant', `Switched to <strong>${mode}</strong> mode. Ready to help!`);
         }
 
         function getResponse(text) {
             const lower = text.toLowerCase();
             if (lower.includes('hello') || lower.includes('hi')) {
-                return '👋 <strong>Hey!</strong> How can I help you today?';
+                return '👋 <strong>Hey!</strong> How can I assist you today?';
             }
-            if (lower.includes('excel') || lower.includes('dashboard')) {
-                return '✅ <strong>Excel dashboard created!</strong><br>Professional spreadsheet with:<br>• Data tables<br>• Charts & graphs<br>• Formulas & calculations<br>Ready to download!';
+            if (lower.includes('excel')) {
+                return '✅ <strong>Excel dashboard created!</strong><br>Professional spreadsheet with data, charts, and formulas. Ready to download.';
             }
-            if (lower.includes('powerpoint') || lower.includes('presentation')) {
-                return '✅ <strong>Presentation created!</strong><br>10-slide deck with:<br>• Professional layout<br>• Charts & visuals<br>• Speaker notes<br>Ready to download!';
+            if (lower.includes('presentation') || lower.includes('slides')) {
+                return '✅ <strong>Presentation created!</strong><br>10 beautiful slides with layouts, charts, and design. Ready to download.';
             }
-            if (lower.includes('analyze') || lower.includes('analysis')) {
-                return '📊 <strong>Analysis Complete!</strong><br>Key findings:<br>• Top performers identified<br>• Trends detected<br>• Recommendations provided';
+            if (lower.includes('analyze')) {
+                return '📈 <strong>Analysis complete!</strong><br>Key insights: 25% growth detected, top performers identified, recommendations provided.';
             }
-            return '💡 <strong>Got it!</strong> I can help with analysis, document generation, coding, and much more. What would you like?';
+            if (lower.includes('code')) {
+                return '💻 <strong>Code generated!</strong><br>Production-ready code with documentation and best practices included.';
+            }
+            return '💡 <strong>Got it!</strong> I can help with analysis, document generation, coding, and more. What would you like?';
         }
 
-        function sendMessage() {
-            const text = inputField.value.trim();
+        function send() {
+            const text = inputEl.value.trim();
             if (!text) return;
-            inputField.value = '';
-            addMessage('user', text);
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'msg';
-            typingMsg.innerHTML = '<div class="avatar">🧠</div><div class="content">⋯ Thinking...</div>';
-            messagesDiv.appendChild(typingMsg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            inputEl.value = '';
+            addMsg('user', text);
+            const typing = document.createElement('div');
+            typing.className = 'message';
+            typing.innerHTML = '<div class="avatar">🧠</div><div class="bubble">⋯ Thinking...</div>';
+            messagesEl.appendChild(typing);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
             setTimeout(() => {
-                typingMsg.remove();
-                addMessage('assistant', getResponse(text));
-            }, 700);
+                typing.remove();
+                addMsg('assistant', getResponse(text));
+            }, 800);
         }
 
-        inputField.addEventListener('keypress', (e) => {
+        inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                sendMessage();
+                send();
             }
         });
 

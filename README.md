@@ -1,166 +1,138 @@
-# NOKES Pro 🧠
+# Nokes AI
 
-**Better than Claude Pro & GPT-4 Pro – Completely Free**
+A production-ready AI assistant system with conversational capabilities, memory management, and multi-purpose intelligence.
 
-## ✨ Features
+## Features
 
-### 🎯 Premium AI Chat
-- Deep analysis and research capabilities
-- Strategic thinking and problem-solving
-- Multi-mode operation (Chat, Analyze, Create)
-- Customizable system prompts and AI personalities
+- **Conversational AI**: Natural language understanding and generation
+- **Memory System**: Vector embeddings for context retention
+- **Multi-Mode**: API server, CLI, and programmatic usage
+- **Extensible**: Easy plugin architecture for custom capabilities
+- **Production Ready**: Logging, error handling, Docker support
+- **Fast**: Built on FastAPI for high performance
 
-### 📊 Advanced Document Generation
-- **Excel Dashboards** - Professional spreadsheets with formulas, charts, and pivot tables
-- **PowerPoint Presentations** - Beautiful slide decks with custom formatting
-- **Data Visualization** - Charts, graphs, and analytics
-- **Code Generation** - Multi-language programming support
+## Quick Start
 
-### 🔍 Data Analysis Tools
-- CSV/Excel file analysis
-- Real-time insights and recommendations
-- Statistical summaries and trends
-- Custom report generation
+### Prerequisites
+- Python 3.10+
+- pip/poetry
+- OpenAI or Anthropic API key
 
-### 🔬 Research Mode
-- Deep topic investigation
-- Competitive analysis
-- Market research
-- Comprehensive reporting
+### Installation
 
-### 🎨 Beautiful UI
-- Modern dark theme with glassmorphism
-- Responsive design (desktop & mobile)
-- Smooth animations and transitions
-- Real-time chat with typing indicators
-- Professional gradient branding
-
-### 🔐 Privacy First
-- 100% local storage (no cloud required)
-- All data stored in browser only
-- No API keys saved to servers
-- Complete user control
-
-## 🚀 Getting Started
-
-### Quick Start
-1. Open `index.html` in any modern browser
-2. Start chatting immediately (no signup required)
-3. Generate documents, analyze data, or write code
-
-### Optional: Connect to AI APIs
-
-**Settings** → Choose your provider:
-- 🧠 **NOKES Native** (default, no API key needed)
-- 🤖 **OpenAI** (GPT-4 Turbo, GPT-3.5)
-- 🧬 **Anthropic** (Claude 3 Opus, Sonnet)
-- 🔮 **Google** (Gemini Pro)
-- 🔍 **Perplexity** (Advanced Research)
-
-Paste your API key and select your model.
-
-## 💡 What Makes NOKES Pro Better?
-
-✅ **Free Forever** - No subscriptions, no limits  
-✅ **No Sign-up** - Works offline, no account needed  
-✅ **Fast** - Runs entirely in your browser  
-✅ **Private** - All data stays on your device  
-✅ **Customizable** - Create your own AI system prompts  
-✅ **Multi-Provider** - Use any AI provider you prefer  
-✅ **Professional** - Enterprise-grade UI and features  
-✅ **Always Improving** - Regular updates and new features  
-
-## 🎯 Use Cases
-
-- **Business Analysis** - Create reports and dashboards
-- **Content Creation** - Generate documents and presentations
-- **Code Development** - Debug and write code
-- **Research** - Comprehensive topic investigation
-- **Education** - Learn with interactive analysis
-- **Productivity** - Automate document generation
-
-## 🛠️ Technology Stack
-
-- **Frontend**: Pure HTML, CSS, JavaScript (no frameworks)
-- **Libraries**:
-  - XLSX.js - Excel file generation
-  - PptxGenJS - PowerPoint generation
-  - Chart.js - Data visualization
-  - FileSaver.js - File download handling
-
-## ⚙️ Customization
-
-### Edit System Prompt
-In Settings, modify the system prompt to change AI behavior. Example:
-```
-You are NOKES, a specialized consultant for [YOUR_DOMAIN].
-Focus on [YOUR_SPECIALIZATION].
-Always provide [YOUR_PREFERENCE].
+```bash
+git clone https://github.com/naasifveroni-creator/nokes-ai.git
+cd nokes-ai
+pip install -r requirements.txt
 ```
 
-### Adjust Creativity
-Slider from 0 (Precise) to 1 (Creative)
+### Configuration
 
-### Enable/Disable Features
-Toggle: Code Generation, Data Visualization, Document Generation, Research Mode
+Create a `.env` file:
 
-## 📱 Responsive Design
+```env
+LLM_PROVIDER=openai  # or anthropic
+OPENAI_API_KEY=your-key-here
+ANTHROPIC_API_KEY=your-key-here
+NOKES_HOST=0.0.0.0
+NOKES_PORT=8000
+LOG_LEVEL=INFO
+```
 
-- **Desktop** - Full sidebar + expanded chat
-- **Tablet** - Optimized layout
-- **Mobile** - Compact sidebar + fullscreen chat
+### Run the Server
 
-## 🔄 Local Storage
+```bash
+python -m nokes.api.server
+```
 
-- Chat history (auto-saved)
-- Settings and preferences
-- API keys (encrypted, stored locally only)
-- Custom prompts
-- Usage statistics
+API available at `http://localhost:8000`
 
-## 🐛 Troubleshooting
+### CLI Usage
 
-**Files not downloading?**
-- Check browser permissions
-- Try a different browser
-- Ensure JavaScript is enabled
+```bash
+python -m nokes.cli.main chat
+python -m nokes.cli.main chat --prompt "What is artificial intelligence?"
+python -m nokes.cli.main analyze --text "Your text here"
+```
 
-**API not working?**
-- Verify API key is correct
-- Check internet connection
-- Run diagnostic test (⚙️ → 🔍 Run Diagnostic)
+## Project Structure
 
-**Chat not responding?**
-- Clear browser cache
-- Check localStorage isn't full
-- Reload the page
+```
+nokes/
+  core/              AI engine and LLM interfaces
+  memory/            Vector store and retrieval
+  api/               FastAPI routes and handlers
+  cli/               Command-line interface
+  models/            Data models and schemas
+  utils/             Helper functions and utilities
+  tests/             Unit and integration tests
+docker/            Container configurations
+```
 
-## 📊 Features Roadmap
+## API Endpoints
 
-- [ ] Image generation integration
-- [ ] Voice input/output
-- [ ] Collaborative workspaces
-- [ ] Plugin ecosystem
-- [ ] Custom model fine-tuning
-- [ ] Advanced data visualization
-- [ ] PDF report generation
-- [ ] Real-time collaboration
+- `POST /chat` - Send a message and get a response
+- `POST /analyze` - Analyze text content
+- `POST /reset` - Reset conversation state
+- `GET /health` - Health check
 
-## 📄 License
+## Development
 
-MIT License - Feel free to fork, modify, and share
+```bash
+# Install dev dependencies
+pip install -r requirements-dev.txt
 
-## 🙌 Contributing
+# Run tests
+pytest
 
-Contributions welcome! Open issues for bugs or feature requests.
+# Format code
+black nokes/ tests/
 
-## 💬 Support
+# Lint
+flake8 nokes/
+```
 
-Have questions? Issues?
-- Check the troubleshooting section
-- Run the diagnostic test
-- Open a GitHub issue
+## Docker
 
----
+```bash
+docker build -f docker/Dockerfile -t nokes:latest .
+docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8000:8000 nokes:latest
+```
 
-**NOKES Pro** - The Premium AI Assistant That's Actually Better. Free Forever. 🚀
+Or use docker-compose:
+
+```bash
+docker-compose up
+```
+
+## Usage Examples
+
+### Python API
+
+```python
+import asyncio
+from nokes.core.engine import NokesEngine
+
+async def main():
+    engine = NokesEngine(llm_provider="openai")
+    response = await engine.chat("Hello Nokes!")
+    print(response.content)
+
+asyncio.run(main())
+```
+
+### REST API
+
+```bash
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is machine learning?"}'
+```
+
+## Contributing
+
+Pull requests welcome! Please ensure tests pass and code is formatted.
+
+## License
+
+MIT

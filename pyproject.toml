@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nokes"
+version = "0.1.0"
+description = "Advanced AI Assistant System"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Nokes Team"}]
+
+[project.urls]
+Homepage = "https://github.com/naasifveroni-creator/nokes-ai"
+Repository = "https://github.com/naasifveroni-creator/nokes-ai"
+
+[project.scripts]
+nokes = "nokes.cli.main:cli"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-v --strict-markers"
+markers = ["asyncio: marks tests as async (deselect with '-m \"not asyncio\"')"] 
+testpaths = ["nokes/tests"]
